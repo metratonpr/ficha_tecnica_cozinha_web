@@ -26,14 +26,16 @@ SECRET_KEY = os.getenv('SECRET_KEY', "django-insecure-31j^g0ukh*ej-=(b*%%0&12q+j
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,receitas.iapotech.com.br').split(',')
 
 CSRF_TRUSTED_ORIGINS = [
-  "http://localhost:8000",
+    "http://localhost:8000",
     "http://127.0.0.1:8000",
     "https://localhost:8000",
     "https://127.0.0.1:8000",
     "https://*.app.github.dev",
+    "https://receitas.iapotech.com.br",
+    "http://receitas.iapotech.com.br",
 ]
 
 
