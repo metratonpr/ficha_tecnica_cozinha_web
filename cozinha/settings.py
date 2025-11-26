@@ -24,9 +24,9 @@ import os
 SECRET_KEY = os.getenv('SECRET_KEY', "django-insecure-31j^g0ukh*ej-=(b*%%0&12q+j(&l5^-dg&nvn42-$kx)s)!tj")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'True') == 'True'
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,receitas.iapotech.com.br').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'receitas.iapotech.com.br,localhost,127.0.0.1').split(',')
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8000",
@@ -63,6 +63,14 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+# Security settings for production
+SECURE_SSL_REDIRECT = os.getenv('SECURE_SSL_REDIRECT', 'False') == 'True'
+SESSION_COOKIE_SECURE = os.getenv('SESSION_COOKIE_SECURE', 'False') == 'True'
+CSRF_COOKIE_SECURE = os.getenv('CSRF_COOKIE_SECURE', 'False') == 'True'
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
 
 ROOT_URLCONF = "cozinha.urls"
 
