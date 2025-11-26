@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Eventos Culinários - SENAC{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div>
+      <h1 class="text-3xl font-bold text-slate-900">📅 Eventos Culinários</h1>
+      <p class="mt-1 text-md text-slate-600">Busque e gerencie os eventos gastronômicos.</p>
+    </div>
+
+    <form method="get" class="flex items-center gap-2">
+      <input type="text" name="q" class="block w-full md:w-64 rounded-md border-slate-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm" placeholder="Buscar evento..." value="{{ request.GET.q }}">
+      <button type="submit" class="inline-flex items-center justify-center rounded-md bg-slate-800 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-800">
+        Buscar
+      </button>
+    </form>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+    {% for evento in eventos %}
+    <div class="flex flex-col rounded-xl bg-white shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+      <div class="flex flex-1 flex-col p-5">
+        <div class="flex-1">
+          <h3 class="text-lg font-bold text-slate-900">{{ evento.nome }}</h3>
+          <div class="mt-2 space-y-1 text-sm text-slate-500">
+            <p><strong>Data:</strong> {{ evento.data|date:"d/m/Y" }}</p>
+            <p><strong>Público:</strong> {{ evento.numero_pessoas }} pessoas</p>
+          </div>
+        </div>
+
+        <div class="mt-6 space-y-2 border-t border-slate-200 pt-4 text-sm">
+          <div class="flex justify-between">
+            <span class="text-slate-500">💰 Custo Total:</span>
+            <span class="font-semibold text-slate-800">R$ {{ evento.custo_total }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-500">🍽️ Custo/pessoa:</span>
+            <span class="font-semibold text-slate-800">R$ {{ evento.custo_por_pessoa }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="font-bold text-amber-700">💵 Lucro estimado:</span>
+            <span class="font-bold text-amber-700">R$ {{ evento.lucro_estimado }}</span>
+          </div>
+        </div>
+
+        <div class="mt-6">
+          <a href="{% url 'eventos:detalhe_evento' evento.pk %}" class="block w-full rounded-lg bg-slate-100 px-4 py-2.5 text-center text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500">
+            📄 Ver Detalhes do Evento
+          </a>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-span-1 sm:col-span-2 lg:col-span-3 text-center py-16">
+      <h5 class="text-xl font-semibold text-slate-700">😔 Nenhum evento encontrado.</h5>
+      <p class="mt-2 text-slate-500">Tente buscar por outro termo ou cadastre um novo evento.</p>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% if is_paginated %}
+  <nav aria-label="Paginação" class="flex items-center justify-center pt-8">
+    <ul class="flex items-center -space-x-px h-10 text-base">
+      {% if page_obj.has_previous %}
+      <li>
+        <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="flex items-center justify-center px-4 h-10 ml-0 leading-tight text-slate-500 bg-white border border-slate-300 rounded-l-lg hover:bg-slate-100 hover:text-slate-700">
+          ← Anterior
+        </a>
+      </li>
+      {% endif %}
+
+      <li>
+        <span class="flex items-center justify-center px-4 h-10 leading-tight text-slate-700 bg-slate-200 border border-slate-300 z-10" aria-current="page">
+          {{ page_obj.number }}
+        </span>
+      </li>
+
+      {% if page_obj.has_next %}
+      <li>
+        <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="flex items-center justify-center px-4 h-10 leading-tight text-slate-500 bg-white border border-slate-300 rounded-r-lg hover:bg-slate-100 hover:text-slate-700">
+          Próxima →
+        </a>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
+
+</div>
+{% endblock %}

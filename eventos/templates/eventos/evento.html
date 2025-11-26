@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Ficha de Evento - {{ evento.nome }}{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-5xl bg-white p-6 sm:p-8 rounded-2xl shadow-lg">
+
+  <header class="border-b border-slate-200 pb-6">
+    <h1 class="text-3xl font-bold tracking-tight text-slate-900">{{ evento.nome }}</h1>
+    <div class="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-2 text-sm text-slate-600">
+      <p><strong>Tipo:</strong> Ficha Técnica de Evento</p>
+      <p><strong>Data:</strong> {{ evento.data|date:"d/m/Y" }}</p>
+      <p><strong>Nº de Pessoas:</strong> {{ evento.numero_pessoas }}</p>
+    </div>
+  </header>
+
+  <div class="mt-8 space-y-12">
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-x-12 gap-y-12">
+      
+      <div class="lg:col-span-3 space-y-12">
+        <section>
+          <h2 class="text-xl font-semibold text-slate-800 mb-4">🍽️ Cardápio</h2>
+          <div class="overflow-x-auto rounded-lg border border-slate-200">
+            <table class="min-w-full divide-y divide-slate-200 text-sm">
+              <thead class="bg-slate-50"><tr class="text-left">
+                <th class="py-3 px-4 font-semibold text-slate-700">Receita</th>
+                <th class="py-3 px-4 font-semibold text-slate-700 text-center">Porções/pessoa</th>
+                <th class="py-3 px-4 font-semibold text-slate-700 text-right">Custo Total (R$)</th>
+              </tr></thead>
+              <tbody class="bg-white divide-y divide-slate-200">
+                {% for item in itens %}
+                <tr>
+                  <td class="py-3 px-4 font-medium text-slate-800">{{ item.receita.titulo }}</td>
+                  <td class="py-3 px-4 text-slate-600 text-center">{{ item.porcoes_por_pessoa }}</td>
+                  <td class="py-3 px-4 text-slate-600 text-right">{{ item.custo_total }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="3" class="py-8 text-center text-slate-500">Nenhum item de cardápio adicionado.</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-slate-800 mb-4">👨‍🍳 Equipe</h2>
+          <div class="overflow-x-auto rounded-lg border border-slate-200">
+            <table class="min-w-full divide-y divide-slate-200 text-sm">
+              <thead class="bg-slate-50"><tr class="text-left">
+                <th class="py-3 px-4 font-semibold text-slate-700">Função</th>
+                <th class="py-3 px-4 font-semibold text-slate-700 text-center">Qtd</th>
+                <th class="py-3 px-4 font-semibold text-slate-700 text-center">Horas</th>
+                <th class="py-3 px-4 font-semibold text-slate-700 text-right">Valor/hora (R$)</th>
+                <th class="py-3 px-4 font-semibold text-slate-700 text-right">Custo Total (R$)</th>
+              </tr></thead>
+              <tbody class="bg-white divide-y divide-slate-200">
+                {% for p in participacoes %}
+                <tr>
+                  <td class="py-3 px-4 font-medium text-slate-800">{{ p.funcao.nome }}</td>
+                  <td class="py-3 px-4 text-slate-600 text-center">{{ p.quantidade }}</td>
+                  <td class="py-3 px-4 text-slate-600 text-center">{{ p.horas }}</td>
+                  <td class="py-3 px-4 text-slate-600 text-right">{{ p.valor_hora|default:p.funcao.valor_hora_padrao }}</td>
+                  <td class="py-3 px-4 text-slate-600 text-right">{{ p.custo_total }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="py-8 text-center text-slate-500">Nenhuma função de equipe adicionada.</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <div class="lg:col-span-2 space-y-12">
+        <section>
+          <h2 class="text-xl font-semibold text-slate-800 mb-4">💰 Resumo de Custos</h2>
+          <div class="space-y-3 rounded-lg border border-slate-200 p-4 text-sm">
+            <div class="flex justify-between items-baseline"><span class="text-slate-500">Custo de Receitas</span><span class="font-medium text-slate-700">R$ {{ evento.custo_receitas }}</span></div>
+            <div class="flex justify-between items-baseline"><span class="text-slate-500">Custo de Mão de Obra</span><span class="font-medium text-slate-700">R$ {{ evento.custo_mao_obra_total }}</span></div>
+            <div class="flex justify-between items-baseline"><span class="text-slate-500">Custo Indireto</span><span class="font-medium text-slate-700">R$ {{ evento.custo_indireto }}</span></div>
+            <div class="flex justify-between items-baseline pt-2 border-t border-slate-200"><strong class="text-slate-800">Custo Total</strong><strong class="text-slate-800 text-base">R$ {{ evento.custo_total }}</strong></div>
+            <div class="flex justify-between items-baseline"><span class="text-slate-500">Margem de Lucro (%)</span><span class="font-medium text-slate-700">{{ evento.margem_lucro }} %</span></div>
+            <div class="flex justify-between items-baseline"><span class="text-slate-500">Preço de Venda Total</span><span class="font-medium text-slate-700">R$ {{ evento.preco_venda_total }}</span></div>
+            <div class="flex justify-between items-baseline"><span class="text-slate-500">Custo por Pessoa</span><span class="font-medium text-slate-700">R$ {{ evento.custo_por_pessoa }}</span></div>
+            <div class="flex justify-between items-baseline"><span class="text-slate-500">Preço por Pessoa</span><span class="font-medium text-slate-700">R$ {{ evento.preco_venda_por_pessoa }}</span></div>
+            <div class="flex justify-between items-baseline mt-2 pt-2 border-t border-amber-200 bg-amber-50 -mx-4 px-4 py-2 rounded-b-lg"><strong class="text-amber-800">Lucro Estimado</strong><strong class="text-amber-800 text-lg">R$ {{ evento.lucro_estimado }}</strong></div>
+          </div>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-slate-800 mb-4">🛒 Lista de Compras</h2>
+          <div class="overflow-x-auto rounded-lg border border-slate-200">
+            <table class="min-w-full divide-y divide-slate-200 text-sm">
+              <thead class="bg-slate-50"><tr class="text-left">
+                <th class="py-3 px-4 font-semibold text-slate-700">Ingrediente</th>
+                <th class="py-3 px-4 font-semibold text-slate-700 text-right">Qtd Total</th>
+                <th class="py-3 px-4 font-semibold text-slate-700 text-right">Custo (R$)</th>
+              </tr></thead>
+              <tbody class="bg-white divide-y divide-slate-200">
+                {% for item in lista_compras %}
+                <tr>
+                  <td class="py-3 px-4 font-medium text-slate-800">{{ item.ingrediente }}</td>
+                  <td class="py-3 px-4 text-slate-600 text-right">{{ item.quantidade }} {{ item.unidade }}</td>
+                  <td class="py-3 px-4 text-slate-600 text-right">{{ item.custo_total }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="3" class="py-8 text-center text-slate-500">Nenhum ingrediente calculado.</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </div>
+
+  <footer class="mt-12 pt-6 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <a href="{% url 'eventos:lista_eventos' %}" class="inline-flex items-center gap-2 rounded-md bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-500">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.612l4.158 3.96a.75.75 0 11-1.04 1.08l-5.5-5.25a.75.75 0 010-1.08l5.5-5.25a.75.75 0 111.04 1.08L5.612 9.25H16.25A.75.75 0 0117 10z" clip-rule="evenodd" /></svg>
+      Voltar à lista de eventos
+    </a>
+    <a href="?format=pdf" class="inline-flex items-center gap-2 rounded-md bg-red-700 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M5 2.5a.5.5 0 01.5-.5h8a.5.5 0 01.5.5v2.512A4.502 4.502 0 0117.5 9.5v5.006c0 .185-.027.366-.078.536a.75.75 0 01-1.444.218A3.001 3.001 0 0013 12.5a3 3 0 00-3-3H4.872a.75.75 0 01-.68-.433l-1.58-3.16a.75.75 0 01.034-.736L4.21 2.62A.75.75 0 014.872 2.5H5zM6.5 5a.5.5 0 01.5-.5h4a.5.5 0 01.5.5v1a.5.5 0 01-.5.5h-4a.5.5 0 01-.5-.5V5z" clip-rule="evenodd" /></svg>
+      Exportar PDF
+    </a>
+  </footer>
+
+</div>
+{% endblock %}

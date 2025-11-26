@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Ficha Técnica - {{ receita.titulo }}{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-4xl bg-white p-6 sm:p-8 rounded-2xl shadow-lg">
+
+  <header class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6 border-b border-slate-200 pb-6">
+    <div>
+      <h1 class="text-3xl font-bold tracking-tight text-slate-900">{{ receita.titulo }}</h1>
+      <div class="mt-2 space-y-1 text-sm text-slate-600">
+        <p><strong>Categoria:</strong> {{ receita.categoria.nome }}</p>
+        {% if receita.disciplina %}
+        <p><strong>Disciplina:</strong> {{ receita.disciplina }}</p>
+        {% endif %}
+        {% if receita.tipo_coccao %}
+        <p><strong>Método de cocção:</strong> {{ receita.tipo_coccao }}</p>
+        {% endif %}
+      </div>
+    </div>
+    {% if receita.foto_preparo %}
+    <div class="flex-shrink-0">
+      <img src="{{ receita.foto_preparo.url }}" alt="Foto da receita" class="h-36 w-full sm:w-48 rounded-lg object-cover shadow-md">
+    </div>
+    {% endif %}
+  </header>
+
+  <div class="mt-8 space-y-10">
+    <section>
+      <h2 class="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2 mb-4">🧾 Rendimento</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-4 text-sm">
+        <div>
+          <p class="text-slate-500">Total</p>
+          <p class="font-semibold text-slate-800">{{ receita.rendimento_total }} {{ receita.unidade_rendimento }}</p>
+        </div>
+        <div>
+          <p class="text-slate-500">Peso por porção</p>
+          <p class="font-semibold text-slate-800">{{ receita.peso_por_porcao }} {{ receita.unidade_rendimento }}</p>
+        </div>
+        <div>
+          <p class="text-slate-500">Nº de porções</p>
+          <p class="font-semibold text-slate-800">{{ numero_porcoes }}</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2 mb-4">🥣 Ingredientes</h2>
+      <div class="overflow-x-auto rounded-lg border border-slate-200">
+        <table class="min-w-full divide-y divide-slate-200 text-sm">
+          <thead class="bg-slate-50">
+            <tr>
+              <th scope="col" class="py-3 px-4 text-left font-semibold text-slate-700">Ingrediente</th>
+              <th scope="col" class="py-3 px-4 text-left font-semibold text-slate-700">Unidade</th>
+              <th scope="col" class="py-3 px-4 text-left font-semibold text-slate-700">Qtd Líquida</th>
+              <th scope="col" class="py-3 px-4 text-left font-semibold text-slate-700">Medida Caseira</th>
+              <th scope="col" class="py-3 px-4 text-right font-semibold text-slate-700">Custo (R$)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 bg-white">
+            {% for item in itens %}
+            <tr>
+              <td class="whitespace-nowrap py-3 px-4 text-slate-800 font-medium">{{ item.ingrediente.nome }}</td>
+              <td class="whitespace-nowrap py-3 px-4 text-slate-600">{{ item.unidade }}</td>
+              <td class="whitespace-nowrap py-3 px-4 text-slate-600">{{ item.quantidade_liquida }}</td>
+              <td class="whitespace-nowrap py-3 px-4 text-slate-600">{{ item.medida_caseira|default:"-" }}</td>
+              <td class="whitespace-nowrap py-3 px-4 text-right text-slate-600">{{ item.custo_total }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="5" class="py-8 px-4 text-center text-slate-500">Nenhum ingrediente cadastrado.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    {% if componentes %}
+    <section>
+      <h2 class="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2 mb-4">🍳 Sub-receitas</h2>
+      <div class="overflow-x-auto rounded-lg border border-slate-200">
+        <table class="min-w-full divide-y divide-slate-200 text-sm">
+          <thead class="bg-slate-50">
+            <tr>
+              <th scope="col" class="py-3 px-4 text-left font-semibold text-slate-700">Sub-receita</th>
+              <th scope="col" class="py-3 px-4 text-left font-semibold text-slate-700">Quantidade</th>
+              <th scope="col" class="py-3 px-4 text-left font-semibold text-slate-700">Unidade</th>
+              <th scope="col" class="py-3 px-4 text-right font-semibold text-slate-700">Custo (R$)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 bg-white">
+            {% for comp in componentes %}
+            <tr>
+              <td class="whitespace-nowrap py-3 px-4 text-slate-800 font-medium">{{ comp.sub_receita.titulo }}</td>
+              <td class="whitespace-nowrap py-3 px-4 text-slate-600">{{ comp.quantidade }}</td>
+              <td class="whitespace-nowrap py-3 px-4 text-slate-600">{{ comp.unidade }}</td>
+              <td class="whitespace-nowrap py-3 px-4 text-right text-slate-600">{{ comp.custo_total }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+    {% endif %}
+
+    <section>
+        <h2 class="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2 mb-4">💰 Custos e Tempo</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-4 text-sm">
+          <div>
+            <p class="text-slate-500">Custo total</p>
+            <p class="font-bold text-lg text-amber-700">R$ {{ custo_total }}</p>
+          </div>
+          <div>
+            <p class="text-slate-500">Custo por porção</p>
+            <p class="font-bold text-lg text-amber-700">R$ {{ custo_por_porcao }}</p>
+          </div>
+          <div>
+            <p class="text-slate-500">Tempo total</p>
+            <p class="font-semibold text-slate-800">{{ receita.tempo_preparo_min|default:0 }} + {{ receita.tempo_coccao_min|default:0 }} min</p>
+          </div>
+        </div>
+      </section>
+
+    {% if receita.modo_preparo %}
+    <section>
+      <h2 class="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2 mb-4">📋 Modo de preparo</h2>
+      <div class="prose prose-slate max-w-none text-slate-700">
+        <p style="white-space:pre-line;">{{ receita.modo_preparo }}</p>
+      </div>
+    </section>
+    {% endif %}
+
+    {% if receita.observacoes %}
+    <section>
+      <h2 class="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2 mb-4">📌 Observações</h2>
+      <div class="prose prose-slate max-w-none text-slate-700">
+        <p style="white-space:pre-line;">{{ receita.observacoes }}</p>
+      </div>
+    </section>
+    {% endif %}
+  </div>
+
+  <footer class="mt-10 pt-6 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <a href="{% url 'fichas:lista_fichas' %}" class="inline-flex items-center gap-2 rounded-md bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-500">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.612l4.158 3.96a.75.75 0 11-1.04 1.08l-5.5-5.25a.75.75 0 010-1.08l5.5-5.25a.75.75 0 111.04 1.08L5.612 9.25H16.25A.75.75 0 0117 10z" clip-rule="evenodd" /></svg>
+      Voltar à lista
+    </a>
+    <a href="{% url 'fichas:ficha' receita.pk %}?format=pdf" class="inline-flex items-center gap-2 rounded-md bg-red-700 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M5 2.5a.5.5 0 01.5-.5h8a.5.5 0 01.5.5v2.512A4.502 4.502 0 0117.5 9.5v5.006c0 .185-.027.366-.078.536a.75.75 0 01-1.444.218A3.001 3.001 0 0013 12.5a3 3 0 00-3-3H4.872a.75.75 0 01-.68-.433l-1.58-3.16a.75.75 0 01.034-.736L4.21 2.62A.75.75 0 014.872 2.5H5zM6.5 5a.5.5 0 01.5-.5h4a.5.5 0 01.5.5v1a.5.5 0 01-.5.5h-4a.5.5 0 01-.5-.5V5z" clip-rule="evenodd" /></svg>
+      Exportar PDF
+    </a>
+  </footer>
+
+</div>
+{% endblock %}
